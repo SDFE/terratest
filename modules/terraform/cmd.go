@@ -17,6 +17,17 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		args = append(args, "-no-color")
 	}
 
+	// If Lock is set to true, override the lock argument that has been set (ignore false)
+	if options.Lock == true {
+		lockKey := "-lock"
+		for i, argValue := range args {
+			parts := strings.Split(argValue, "=")
+			if parts[0] == lockKey {
+				args[i] = fmt.Sprintf("%s=true", lockKey)
+			}
+		}
+	}
+
 	// if SshAgent is provided, override the local SSH agent with the socket of our in-process agent
 	if options.SshAgent != nil {
 		// Initialize EnvVars, if it hasn't been set yet
@@ -25,6 +36,7 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		}
 		options.EnvVars["SSH_AUTH_SOCK"] = options.SshAgent.SocketFile()
 	}
+
 	return options, args
 }
 

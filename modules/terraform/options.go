@@ -18,4 +18,5 @@ type Options struct {
 	Upgrade                  bool                   // Whether the -upgrade flag of the terraform init command should be set to true or not
 	NoColor                  bool                   // Whether the -no-color flag will be set for any Terraform command or not
 	SshAgent                 *ssh.SshAgent          // Overrides local SSH agent with the given in-process agent
+	Lock                     bool                   // Enable locking for plan, apply and destroy (by default only plan uses locking)
 }
