@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -17,14 +18,18 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		args = append(args, "-no-color")
 	}
 
-	// If Lock is set to true, override the lock argument that has been set (ignore false)
-	if options.Lock == true {
+	// If Lock is set, override the lock argument that has been passed in (for apply, plan and destroy commands)
+	if collections.ListContains(args, "plan") || collections.ListContains(args, "apply") || collections.ListContains(args, "destroy") {
 		lockKey := "-lock"
 		for i, argValue := range args {
 			parts := strings.Split(argValue, "=")
 			if parts[0] == lockKey {
-				args[i] = fmt.Sprintf("%s=true", lockKey)
+				args[i] = fmt.Sprintf("%s=%s", lockKey, strconv.FormatBool(options.Lock))
 			}
+		}
+
+		if options.ExtraArguments != nil {
+			args = append(args, options.ExtraArguments...)
 		}
 	}
 
@@ -36,7 +41,6 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		}
 		options.EnvVars["SSH_AUTH_SOCK"] = options.SshAgent.SocketFile()
 	}
-
 	return options, args
 }
 
