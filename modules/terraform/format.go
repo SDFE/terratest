@@ -18,8 +18,8 @@ func FormatArgs(options *Options, args ...string) []string {
 	return terraformArgs
 }
 
-// FormatTerraformVarsAsArgs formats the given variables as command-line args for Terraform (e.g. of the format
-// -var key=value).
+// FormatTerraformVarsAsArgs formats the given variables as command-line args for Terraform
+// (e.g. into the format -var key=value).
 func FormatTerraformVarsAsArgs(vars map[string]interface{}) []string {
 	return formatTerraformArgs(vars, "-var")
 }
@@ -28,12 +28,14 @@ func FormatTerraformVarsAsArgs(vars map[string]interface{}) []string {
 // -lock, -lock-timeout
 func FormatTerraformLockAsArgs(lockCheck bool, lockTimeout string) []string {
 	var lockArgs []string
-	if lockCheck == true {
+	if lockCheck {
 		lockArgs = append(lockArgs, "-lock=true")
 		if lockTimeout != "" {
 			lockTimeoutValue := fmt.Sprintf("%s=%s", "-lock-timeout", lockTimeout)
 			lockArgs = append(lockArgs, lockTimeoutValue)
 		}
+	} else {
+		lockArgs = append(lockArgs, "-lock=false")
 	}
 	return lockArgs
 }
